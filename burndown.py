@@ -6,14 +6,15 @@ from jira_utils_common import seconds_to_hours_str
 
 parser = argparse.ArgumentParser(description='Get data for burndown chart')
 parser.add_argument('jira')
-parser.add_argument('username')
 parser.add_argument('epic')
 arg = parser.parse_args()
 
-password = getpass()
+token = str()
+with open('token.txt', 'r') as file:
+    token = file.readline()
 
 jira_options = {'server': arg.jira}
-jira = JIRA(options=jira_options, basic_auth=(arg.username, password))
+jira = JIRA(options=jira_options, token_auth=token)
 
 query = f'"Epic Link" = {arg.epic} or issueFunction in subtasksOf(\'"Epic Link" = {arg.epic}\')'
 print('Getting list of issues...')
