@@ -3,19 +3,21 @@ This script reads all worklogs for specified epic and calculates
 how much time has been spent by every contributor
 """
 import argparse
-from getpass import getpass
 from jira import JIRA
 
 parser = argparse.ArgumentParser(description='Get contribution in hours and percents for specified epic')
 parser.add_argument('jira')
-parser.add_argument('username')
 parser.add_argument('epic')
 arg = parser.parse_args()
 
-password = getpass()
+token = None
+with open('token.txt', 'r') as file:
+    token = file.read()
+
+token = token.strip('\n') # for some reason \n appears in string after reading from file
 
 jira_options = {'server': arg.jira}
-jira = JIRA(options=jira_options, basic_auth=(arg.username, password))
+jira = JIRA(options=jira_options, token_auth=token)
 
 query = f'"Epic Link" = {arg.epic} or issueFunction in subtasksOf(\'"Epic Link" = {arg.epic}\')'
 print('Getting list of tasks...')
